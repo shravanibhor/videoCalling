@@ -13,13 +13,17 @@ function App() {
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // Center content vertically
-          alignItems: "center", // Center content horizontally
-          minHeight: "100vh", // Ensure it covers the full height of the viewport
-          width: "100vw", // Ensure it spans the full width of the viewport
-          margin: "0", // Remove any default margin
-          backgroundColor: "#f8f9fa", // Light background color
-          padding: "0", // Remove padding to ensure full coverage
+          justifyContent: "center", 
+          alignItems: "center", 
+          minHeight: "100vh", 
+          width: "100vw", 
+          margin: "0", 
+          backgroundColor: "#f8f9fa", 
+          padding: "0", 
+          backgroundImage: "url('https://i.ibb.co/hJYztZcn/img.jpg')", // Background image
+          backgroundSize: "200px 200px", // Set the size of the image
+          backgroundPosition: "center", // Center the image
+          backgroundRepeat: "repeat", // Allow the image to repeat
         }}
       >
         <div
