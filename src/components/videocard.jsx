@@ -2,11 +2,7 @@ import React, { useState, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
-import "../styles/index.css"; 
-
-
-
-
+import "../styles/index.css";
 
 const VideoCallApp = () => {
   const [code, setCode] = useState("");
@@ -18,14 +14,17 @@ const VideoCallApp = () => {
   // Function to get camera and microphone access
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (error) {
       console.error("Error accessing camera and microphone:", error);
-      alert("Could not access camera and microphone. Please allow permissions.");
+      // alert("Could not access camera and microphone. Please allow permissions.");
     }
   };
 
@@ -54,53 +53,54 @@ const VideoCallApp = () => {
       alert("Enter a valid code to join the call");
     }
   };
-  
 
   return (
-    
     <Container
-    fluid
-    className="d-flex justify-content-center align-items-center custom-light-green"
-    style={{
-      minHeight: "100vh", // Full height of the viewport
-      fontFamily: "cursive",
-    }}
-  >
-    {!callStarted ? (
-      <Card
-        className="p-5 shadow-lg text-center custom-pale-peach"
-        style={{
-          maxWidth: "600px", // Wider card for desktop view
-          borderRadius: "20px",
-        }}
-      >
-        <Card.Body>
-          <Card.Title
-            className="mb-4 custom-text-color"
-            style={{ fontSize: "2rem", fontWeight: "bold" }}
-          >
-            Join a Video Call
-          </Card.Title>
-          <Form.Group className="mb-4">
-            <Form.Label className="text-secondary" style={{ fontWeight: "500" }}>
-              Enter Code
-            </Form.Label>
-            <Form.Control
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="Enter call code"
-              className="rounded-2"
-              style={{
-                padding: "12px",
-                fontSize: "1rem",
-                border: "1px solid #ccc",
-              }}
-            />
-          </Form.Group>
+      fluid
+      className="d-flex justify-content-center align-items-center custom-light-green"
+      style={{
+        minHeight: "100vh", // Full height of the viewport
+        fontFamily: "cursive",
+      }}
+    >
+      {!callStarted ? (
+        <Card
+          className="p-5 shadow-lg text-center custom-pale-peach"
+          style={{
+            maxWidth: "600px", // Wider card for desktop view
+            borderRadius: "20px",
+          }}
+        >
+          <Card.Body>
+            <Card.Title
+              className="mb-4 custom-text-color"
+              style={{ fontSize: "2rem", fontWeight: "bold" }}
+            >
+              Join a Video Call
+            </Card.Title>
+            <Form.Group className="mb-4">
+              <Form.Label
+                className="text-secondary"
+                style={{ fontWeight: "500" }}
+              >
+                Enter Code
+              </Form.Label>
+              <Form.Control
+                type="text"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                placeholder="Enter call code"
+                className="rounded-2"
+                style={{
+                  padding: "12px",
+                  fontSize: "1rem",
+                  border: "1px solid #ccc",
+                }}
+              />
+            </Form.Group>
             <Button
               style={{
-                backgroundColor: "#FB6F92", 
+                backgroundColor: "#FB6F92",
                 color: "#fff",
                 border: "none",
               }}
@@ -112,7 +112,7 @@ const VideoCallApp = () => {
             <hr className="my-4" />
             <Button
               style={{
-                backgroundColor: "#0492C2", 
+                backgroundColor: "#0492C2",
                 color: "#fff",
                 border: "none",
               }}
@@ -121,19 +121,19 @@ const VideoCallApp = () => {
             >
               Generate Code
             </Button>
-          {generatedCode && (
-            <p
-              className="mt-4 text-info"
-              style={{
-                fontWeight: "bold",
-                fontSize: "1.2rem",
-              }}
-            >
-              Share this code: <strong>{generatedCode}</strong>
-            </p>
-          )}
-        </Card.Body>
-      </Card>
+            {generatedCode && (
+              <p
+                className="mt-4 text-info"
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                }}
+              >
+                Share this code: <strong>{generatedCode}</strong>
+              </p>
+            )}
+          </Card.Body>
+        </Card>
       ) : (
         <Row
           className="w-100 h-100 bg-dark text-white rounded-3"

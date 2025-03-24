@@ -13,13 +13,13 @@ function App() {
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", 
-          alignItems: "center", 
-          minHeight: "100vh", 
-          width: "100vw", 
-          margin: "0", 
-          backgroundColor: "#f8f9fa", 
-          padding: "0", 
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          width: "100vw",
+          margin: "0",
+          backgroundColor: "#f8f9fa",
+          padding: "0",
           backgroundImage: "url('https://i.ibb.co/hJYztZcn/img.jpg')", // Background image
           backgroundSize: "200px 200px", // Set the size of the image
           backgroundPosition: "center", // Center the image
