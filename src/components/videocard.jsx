@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
-import "./index.css"; 
+import "../styles/index.css"; 
 
 
 
@@ -98,21 +98,29 @@ const VideoCallApp = () => {
               }}
             />
           </Form.Group>
-          <Button
-            variant="primary"
-            className="w-100 mb-3 custom-pale-peach custom-button-text-color"
-            onClick={startCall}
-          >
-            Join Call
-          </Button>
-          <hr className="my-4" />
-          <Button
-            variant="success"
-            className="w-100 custom-button-color custom-button-text-color"
-            onClick={generateCode}
-          >
-            Generate Code
-          </Button>
+            <Button
+              style={{
+                backgroundColor: "#FB6F92", 
+                color: "#fff",
+                border: "none",
+              }}
+              className="w-100 mb-3"
+              onClick={startCall}
+            >
+              Join Call
+            </Button>
+            <hr className="my-4" />
+            <Button
+              style={{
+                backgroundColor: "#0492C2", 
+                color: "#fff",
+                border: "none",
+              }}
+              className="w-100"
+              onClick={generateCode}
+            >
+              Generate Code
+            </Button>
           {generatedCode && (
             <p
               className="mt-4 text-info"
