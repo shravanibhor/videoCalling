@@ -5,25 +5,25 @@ import { Link } from "react-router-dom";
 
 function Header() {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="shadow">
+    <Navbar bg="dark" variant="dark" className="shadow">
       <Container
         style={{
           display: "flex",
-          justifyContent: "center", // Center the entire content horizontally
+          justifyContent: "flex-start",
           alignItems: "center",
-          gap: "200px", // Add spacing between navigation links and brand
         }}
       >
         <Navbar.Brand
-          href="#"
+          href="/"
           style={{
             fontWeight: "bold",
             fontSize: "1.5rem",
+            marginRight: "50px", // Add some gap between Navbar.Brand and Nav
           }}
         >
           Video Calling
         </Navbar.Brand>
-        <Nav style={{ display: "flex", gap: "15px" }}> {/* Navigation links with reduced gap */}
+        <Nav style={{ display: "flex", gap: "15px" }}>
           <Nav.Link as={Link} to="/" style={{ fontWeight: "500" }}>
             Home
           </Nav.Link>

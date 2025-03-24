@@ -1,8 +1,8 @@
-function Footer(){
-    return(
-        <footer>
-            <p>&copy; {new Date().getFullYear()} No bakchodi</p>
-        </footer>
-    )
+function Footer() {
+  return (
+    <footer>
+      <p>&copy; {new Date().getFullYear()}</p>
+    </footer>
+  );
 }
 export default Footer;
