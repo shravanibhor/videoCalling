@@ -22,10 +22,15 @@ const VideoCallApp = () => {
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play();
+        };
       }
     } catch (error) {
       console.error("Error accessing camera and microphone:", error);
-      // alert("Could not access camera and microphone. Please allow permissions.");
+      alert(
+        "Could not access camera and microphone. Please ensure no other applications are using these resources and that permissions are granted."
+      );
     }
   };
 
@@ -39,7 +44,7 @@ const VideoCallApp = () => {
 
     // Calculate call duration
     const callEndTime = new Date();
-    const duration = Math.round((callEndTime - callStartTime) / 6000); // Duration in minutes
+    const duration = Math.round((callEndTime - callStartTime) / 60000); // Duration in minutes
 
     // Update the last call entry with the duration
     const history = JSON.parse(localStorage.getItem("videoCallHistory")) || [];
@@ -171,6 +176,7 @@ const VideoCallApp = () => {
               autoPlay
               playsInline
               className="w-100 h-100 rounded-3 border border-white"
+              style={{ transform: "scaleX(-1)" }} // Flip the video horizontally
             ></video>
             <Button
               variant="danger"
