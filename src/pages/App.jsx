@@ -4,6 +4,7 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import VideoCallApp from "../components/videocard";
 import History from "./History"; // Import the History component
+import Settings from "./Settings";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
             <Routes>
               <Route path="/" element={<VideoCallApp />} />
               <Route path="/history" element={<History />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </div>
         </div>
