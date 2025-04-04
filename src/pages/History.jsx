@@ -26,9 +26,18 @@ const History = () => {
                 borderRadius: "5px",
               }}
             >
-              <p><strong>Date:</strong> {call.date}</p>
-              <p><strong>Duration:</strong> {call.duration} minutes</p>
-              <p><strong>Participants:</strong> {call.participants.join(", ")}</p>
+              <p>
+                <strong>Date:</strong> {call.date}
+              </p>
+              <p>
+                <strong>Code:</strong> {call.code}
+              </p>
+              <p>
+                <strong>Duration:</strong> {call.duration} minutes
+              </p>
+              <p>
+                <strong>Participants:</strong> {call.participants.join(", ")}
+              </p>
             </li>
           ))}
         </ul>

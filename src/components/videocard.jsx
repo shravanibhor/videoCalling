@@ -8,6 +8,7 @@ const VideoCallApp = () => {
   const [code, setCode] = useState("");
   const [generatedCode, setGeneratedCode] = useState(null);
   const [callStarted, setCallStarted] = useState(false);
+  const [callStartTime, setCallStartTime] = useState(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
@@ -21,10 +22,15 @@ const VideoCallApp = () => {
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play();
+        };
       }
     } catch (error) {
       console.error("Error accessing camera and microphone:", error);
-      // alert("Could not access camera and microphone. Please allow permissions.");
+      alert(
+        "Could not access camera and microphone. Please ensure no other applications are using these resources and that permissions are granted."
+      );
     }
   };
 
@@ -35,6 +41,17 @@ const VideoCallApp = () => {
       streamRef.current = null;
     }
     setCallStarted(false);
+
+    // Calculate call duration
+    const callEndTime = new Date();
+    const duration = Math.round((callEndTime - callStartTime) / 60000); // Duration in minutes
+
+    // Update the last call entry with the duration
+    const history = JSON.parse(localStorage.getItem("videoCallHistory")) || [];
+    if (history.length > 0) {
+      history[history.length - 1].duration = duration;
+      localStorage.setItem("videoCallHistory", JSON.stringify(history));
+    }
   };
 
   // Function to generate a unique code
@@ -48,7 +65,19 @@ const VideoCallApp = () => {
   const startCall = () => {
     if (code.trim().length === 6) {
       setCallStarted(true);
+      setCallStartTime(new Date());
       startCamera();
+
+      // Save call details to localStorage
+      const callDetails = {
+        date: new Date().toLocaleString(),
+        code: code,
+        participants: ["You"], // Add participants as needed
+      };
+      const history =
+        JSON.parse(localStorage.getItem("videoCallHistory")) || [];
+      history.push(callDetails);
+      localStorage.setItem("videoCallHistory", JSON.stringify(history));
     } else {
       alert("Enter a valid code to join the call");
     }
@@ -147,6 +176,7 @@ const VideoCallApp = () => {
               autoPlay
               playsInline
               className="w-100 h-100 rounded-3 border border-white"
+              style={{ transform: "scaleX(-1)" }} // Flip the video horizontally
             ></video>
             <Button
               variant="danger"
