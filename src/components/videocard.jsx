@@ -491,11 +491,11 @@ const VideoCallApp = () => {
               )}
             </div>
 
-            {connectionStatus && (
+            {/* {connectionStatus && (
               <div className="connection-status mb-3">
                 <p className="text-info">{connectionStatus}</p>
               </div>
-            )}
+            )} */}
 
             <Button
               variant="danger"
