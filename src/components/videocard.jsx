@@ -5,19 +5,94 @@ import { Container, Row, Col, Button, Form, Card } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import "../styles/index.css";
 
+// Create a global connection manager to persist across tab changes
+const globalConnectionManager = {
+  isConnected: false,
+  code: "",
+  peerConnection: null,
+  channel: null,
+  localStream: null,
+  remoteStream: null,
+  callStartTime: null,
+  offerSent: false,
+
+  // Save connection state to localStorage
+  saveState() {
+    localStorage.setItem(
+      "videoCallState",
+      JSON.stringify({
+        isConnected: this.isConnected,
+        code: this.code,
+        callStartTime: this.callStartTime
+          ? this.callStartTime.toISOString()
+          : null,
+        offerSent: this.offerSent,
+      })
+    );
+  },
+
+  // Load connection state from localStorage
+  loadState() {
+    const savedState = localStorage.getItem("videoCallState");
+    if (savedState) {
+      const state = JSON.parse(savedState);
+      this.isConnected = state.isConnected;
+      this.code = state.code;
+      this.callStartTime = state.callStartTime
+        ? new Date(state.callStartTime)
+        : null;
+      this.offerSent = state.offerSent;
+      return state;
+    }
+    return null;
+  },
+
+  // Clean up resources
+  cleanup() {
+    if (this.localStream) {
+      this.localStream.getTracks().forEach((track) => track.stop());
+      this.localStream = null;
+    }
+
+    if (this.peerConnection) {
+      this.peerConnection.close();
+      this.peerConnection = null;
+    }
+
+    if (this.channel) {
+      this.channel.close();
+      this.channel = null;
+    }
+
+    this.isConnected = false;
+    this.remoteStream = null;
+    this.offerSent = false;
+    this.saveState();
+  },
+};
+
+// Initialize the global connection manager
+globalConnectionManager.loadState();
+
 const VideoCallApp = () => {
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(globalConnectionManager.code || "");
   const [generatedCode, setGeneratedCode] = useState(null);
-  const [callStarted, setCallStarted] = useState(false);
-  const [callStartTime, setCallStartTime] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
+  const [callStarted, setCallStarted] = useState(
+    globalConnectionManager.isConnected
+  );
+  const [callStartTime, setCallStartTime] = useState(
+    globalConnectionManager.callStartTime
+  );
+  const [remoteStream, setRemoteStream] = useState(
+    globalConnectionManager.remoteStream
+  );
   const [connectionStatus, setConnectionStatus] = useState("");
   const videoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const streamRef = useRef(null);
-  const peerConnectionRef = useRef(null);
-  const offerSentRef = useRef(false);
-  const channelRef = useRef(null);
+  const streamRef = useRef(globalConnectionManager.localStream);
+  const peerConnectionRef = useRef(globalConnectionManager.peerConnection);
+  const offerSentRef = useRef(globalConnectionManager.offerSent);
+  const channelRef = useRef(globalConnectionManager.channel);
 
   // Function to get camera and microphone access
   const startCamera = async () => {
@@ -27,6 +102,8 @@ const VideoCallApp = () => {
         audio: true,
       });
       streamRef.current = stream;
+      globalConnectionManager.localStream = stream;
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
@@ -43,31 +120,24 @@ const VideoCallApp = () => {
 
   // Function to stop camera and microphone and close peer connection
   const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.close();
-      peerConnectionRef.current = null;
-    }
-    if (channelRef.current) {
-      channelRef.current.close();
-      channelRef.current = null;
-    }
+    globalConnectionManager.cleanup();
+
     setCallStarted(false);
     setRemoteStream(null);
     setConnectionStatus("");
 
     // Calculate call duration
-    const callEndTime = new Date();
-    const duration = Math.round((callEndTime - callStartTime) / 60000); // Duration in minutes
+    if (callStartTime) {
+      const callEndTime = new Date();
+      const duration = Math.round((callEndTime - callStartTime) / 60000); // Duration in minutes
 
-    // Update the last call entry with the duration
-    const history = JSON.parse(localStorage.getItem("videoCallHistory")) || [];
-    if (history.length > 0) {
-      history[history.length - 1].duration = duration;
-      localStorage.setItem("videoCallHistory", JSON.stringify(history));
+      // Update the last call entry with the duration
+      const history =
+        JSON.parse(localStorage.getItem("videoCallHistory")) || [];
+      if (history.length > 0) {
+        history[history.length - 1].duration = duration;
+        localStorage.setItem("videoCallHistory", JSON.stringify(history));
+      }
     }
   };
 
@@ -95,6 +165,7 @@ const VideoCallApp = () => {
       ],
     });
     peerConnectionRef.current = pc;
+    globalConnectionManager.peerConnection = pc;
 
     // Add local tracks to the connection
     if (streamRef.current) {
@@ -134,6 +205,7 @@ const VideoCallApp = () => {
       if (event.streams && event.streams[0]) {
         console.log("Received remote stream:", event.streams[0]);
         setRemoteStream(event.streams[0]);
+        globalConnectionManager.remoteStream = event.streams[0];
 
         // Ensure the remote video element is properly set up
         if (remoteVideoRef.current) {
@@ -159,6 +231,7 @@ const VideoCallApp = () => {
     // Initialize the BroadcastChannel for simple signaling
     const channel = new BroadcastChannel(code);
     channelRef.current = channel;
+    globalConnectionManager.channel = channel;
 
     channel.onmessage = async (msg) => {
       const data = msg.data;
@@ -211,6 +284,7 @@ const VideoCallApp = () => {
         console.log("Sending offer:", offer);
         channel.postMessage({ type: "offer", offer });
         offerSentRef.current = true;
+        globalConnectionManager.offerSent = true;
         setConnectionStatus("Offer sent, waiting for answer...");
       } catch (err) {
         console.error("Error creating offer:", err);
@@ -224,6 +298,13 @@ const VideoCallApp = () => {
     if (code.trim().length === 6) {
       setCallStarted(true);
       setCallStartTime(new Date());
+
+      // Update global connection manager
+      globalConnectionManager.isConnected = true;
+      globalConnectionManager.code = code;
+      globalConnectionManager.callStartTime = new Date();
+      globalConnectionManager.saveState();
+
       await startCamera();
       // Save call details to localStorage
       const callDetails = {
@@ -243,10 +324,25 @@ const VideoCallApp = () => {
     }
   };
 
-  // Clean up resources when component unmounts
+  // Initialize component based on saved state
   useEffect(() => {
+    const savedState = globalConnectionManager.loadState();
+    if (savedState && savedState.isConnected) {
+      // If we have a saved connection, try to restore it
+      console.log("Restoring saved connection state");
+      setCallStarted(true);
+      setCode(savedState.code);
+
+      // Start camera and initialize WebRTC
+      startCamera().then(() => {
+        initWebRTC();
+      });
+    }
+
+    // Clean up resources when component unmounts
     return () => {
-      stopCamera();
+      // Don't stop the camera or close connections when navigating between tabs
+      // Only clean up when the user explicitly ends the call
     };
   }, []);
 
