@@ -1,7 +1,7 @@
 {
   "name": "video-calling",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "body-parser": "^2.2.0",
     "bootstrap": "^5.3.3",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
