@@ -5,8 +5,8 @@ const Settings = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [cameraPermission, setCameraPermission] = useState(false);
-  const [micPermission, setMicPermission] = useState(false);
+  const [cameraPermission, setCameraPermission] = useState(true);
+  const [micPermission, setMicPermission] = useState(true);
 
   const handleSaveChanges = (e) => {
     e.preventDefault();

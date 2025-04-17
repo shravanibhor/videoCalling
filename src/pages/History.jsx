@@ -6,14 +6,23 @@ const History = () => {
   useEffect(() => {
     // Retrieve call history from localStorage
     const history = JSON.parse(localStorage.getItem("videoCallHistory")) || [];
-    setCallHistory(history);
+
+    // Filter to only include calls with a duration property
+    const completedCalls = history.filter(
+      (call) =>
+        call.duration !== undefined &&
+        call.duration !== null &&
+        call.duration !== 0
+    );
+
+    setCallHistory(completedCalls);
   }, []);
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>Video Call History</h2>
       {callHistory.length === 0 ? (
-        <p>No call history available.</p>
+        <p>No completed calls in history.</p>
       ) : (
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {callHistory.map((call, index) => (
